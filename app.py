@@ -103,6 +103,19 @@ tk.Button(
     command=save_transaction,
 ).pack(pady=10)
 
+search_frame = tk.Frame(window)
+search_frame.pack(pady=5)
+
+tk.Label(search_frame, text="Search").pack(side=tk.LEFT, padx=5)
+search_entry = tk.Entry(search_frame, width=30)
+search_entry.pack(side=tk.LEFT, padx=5)
+
+tk.Button(
+    search_frame,
+    text="Search",
+    command=lambda: load_transactions(),
+).pack(side=tk.LEFT)
+
 transactions_table = ttk.Treeview(
     window,
     columns=("Date", "Type", "Category", "Amount", "Description"),
@@ -117,11 +130,18 @@ transactions_table.pack(pady=10)
 
 
 def load_transactions():
+    search = f"%{search_entry.get().strip()}%"
+
     connection = sqlite3.connect("duitdiary.db")
     rows = connection.execute(
         """SELECT id, transaction_type, category, amount, date, description
            FROM transactions
-           ORDER BY date DESC, id DESC"""
+           WHERE transaction_type LIKE ?
+                OR category LIKE ?
+                OR date LIKE ?
+                OR description LIKE ?
+           ORDER BY date DESC, id DESC""",
+        (search, search, search, search),
     ).fetchall()
     connection.close()
 
