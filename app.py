@@ -25,7 +25,7 @@ setup_database()
 
 window = tk.Tk()
 window.title("DuitDiary")
-window.geometry("850x600")
+window.geometry("850x750")
 
 title = tk.Label(window, text="DuitDiary", font=("Arial", 20))
 title.pack(pady=20)
@@ -185,6 +185,35 @@ tk.Button(
     window,
     text="Delete Selected",
     command=delete_transaction,
+).pack(pady=5)
+
+def load_selected_for_edit():
+    selected = transactions_table.selection()
+
+    if not selected:
+        messagebox.showwarning("No selection", "Select a transaction first.")
+        return
+
+    values = transactions_table.item(selected[0], "values")
+
+    date_entry.delete(0, tk.END)
+    date_entry.insert(0, values[0])
+
+    type_var.set(values[1])
+
+    category_entry.delete(0, tk.END)
+    category_entry.insert(0, values[2])
+
+    amount_entry.delete(0, tk.END)
+    amount_entry.insert(0, values[3])
+
+    description_entry.delete(0, tk.END)
+    description_entry.insert(0, values[4])
+
+tk.Button(
+    window,
+    text="Load Selected for Edit",
+    command=load_selected_for_edit,
 ).pack(pady=5)
 
 window.mainloop()
